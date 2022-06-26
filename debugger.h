@@ -16,7 +16,8 @@
 #define ET_EXEC 2
 
 /* an enum for return values */
-typedef enum {
+typedef enum
+{
     READING_ERROR,
     ALLOCATION_ERROR,
     NOT_ELF,
@@ -28,14 +29,16 @@ typedef enum {
 } ErrorTypes;
 
 /* a struct to house all sort of useful information for performing checks, and getting information from the file */
-typedef struct {
-    FILE*       file;                  /* ELF file                     */
-	Elf64_Ehdr	file_header;	      /* ELF file header              */
-    Elf64_Shdr*	section_header;	     /* ELF Section headers,which is actually an array */
+typedef struct
+{
+    FILE *file;                 /* ELF file                     */
+    Elf64_Ehdr file_header;     /* ELF file header              */
+    Elf64_Shdr *section_header; /* ELF Section headers,which is actually an array */
 } Filedata;
 
 /* a struct to house all sort of useful information for performing checks, and getting information from the file */
-typedef struct {
+typedef struct
+{
     Elf64_Addr address;
     Elf64_Addr got_address;
     bool undefined;

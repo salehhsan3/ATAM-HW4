@@ -11,14 +11,14 @@
 void static placeHookInCaller(pid_t child_pid, uint64_t rsp_address, uint64_t *inst_backup)
 {
     uint64_t callee_address = ptrace(PTRACE_PEEKTEXT, child_pid, rsp_address, NULL);
-    //printf("calle address: 0x%lx\n", callee_address);
+    // printf("calle address: 0x%lx\n", callee_address);
     *inst_backup = ptrace(PTRACE_PEEKTEXT, child_pid, callee_address, NULL);
     ptrace(PTRACE_POKETEXT, child_pid, callee_address, (*inst_backup & BREAKPOINT_PLACEMENT) | BRK);
 }
 
 void static placeHookInFunction(pid_t child_pid, uint64_t function_addr, uint64_t *inst_backup)
 {
-    //printf("function address: 0x%lx\n", function_addr);
+    // printf("function address: 0x%lx\n", function_addr);
     *inst_backup = ptrace(PTRACE_PEEKTEXT, child_pid, function_addr, NULL);
     ptrace(PTRACE_POKETEXT, child_pid, function_addr, (*inst_backup & BREAKPOINT_PLACEMENT) | BRK);
 }
@@ -26,7 +26,7 @@ void static placeHookInFunction(pid_t child_pid, uint64_t function_addr, uint64_
 void static placeHookInGotOffsetPtr(pid_t child_pid, uint64_t got_addr, uint64_t *inst_backup)
 {
     uint64_t function_addr = ptrace(PTRACE_PEEKTEXT, child_pid, got_addr, NULL);
-    //printf("got function address: 0x%lx\n", function_addr);
+    // printf("got function address: 0x%lx\n", function_addr);
     *inst_backup = ptrace(PTRACE_PEEKTEXT, child_pid, function_addr, NULL);
     ptrace(PTRACE_POKETEXT, child_pid, function_addr, (*inst_backup & BREAKPOINT_PLACEMENT) | BRK);
 }
