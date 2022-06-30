@@ -103,7 +103,7 @@ int32_t static FindDynFuncSymNum(Filedata *file_data, Elf64_Off dyn_str_tab_offs
 	Elf64_Xword symbols_number = (dyn_sym_hdr->sh_size) ? dyn_sym_hdr->sh_size / dyn_sym_hdr->sh_entsize : 0;
 	Elf64_Off dyn_sym_tab_offset = dyn_sym_hdr->sh_offset;
 	size_t sym_name_length = strlen(func_name) + 1;
-	Elf64_Sym *dyn_sym_tab = malloc(sizeof(*dyn_sym_tab));
+	Elf64_Sym *dyn_sym_tab = malloc(sizeof(*dyn_sym_tab)); //array like sh
 	if (dyn_sym_tab == NULL)
 	{
 		return ALLOCATION_ERROR;
@@ -118,8 +118,8 @@ int32_t static FindDynFuncSymNum(Filedata *file_data, Elf64_Off dyn_str_tab_offs
 	{
 		fpread(dyn_sym_tab, sizeof(*dyn_sym_tab), 1, dyn_sym_tab_offset + (Elf64_Off)i * sizeof(*dyn_sym_tab), file_data->file);
 		fpread(sym_name, sym_name_length, 1, dyn_str_tab_offset + (Elf64_Off)dyn_sym_tab->st_name, file_data->file);
-		if (strcmp(func_name, sym_name) == 0)
-		{
+		if ( (strcmp(func_name, sym_name) == 0) && (ELF64_ST_BIND(dyn_sym_tab->st_info) == GLOBAL) && (ELF64_ST_TYPE(dyn_sym_tab->st_info) == STT_FUNC) ) // maybe check if it's a global symbol and if it's a function? -saleh
+		{ // change - saleh!!
 			free(dyn_sym_tab);
 			free(sym_name);
 			return (int32_t)i;
@@ -135,7 +135,7 @@ Elf64_Addr static FindRelaFuncSymAddr(Filedata *file_data, Elf64_Shdr *rela_hdr,
 	Elf64_Xword rel_number = (rela_hdr->sh_size) ? rela_hdr->sh_size / rela_hdr->sh_entsize : 0;
 	Elf64_Xword rel_size = rela_hdr->sh_entsize;
 	Elf64_Off rel_tab_offset = rela_hdr->sh_offset;
-	Elf64_Rel *rel_entry = malloc(sizeof(*rel_entry));
+	Elf64_Rel *rel_entry = malloc(sizeof(*rel_entry)); // array like sh
 	if (rel_entry == NULL)
 	{
 		return ALLOCATION_ERROR;
@@ -143,7 +143,7 @@ Elf64_Addr static FindRelaFuncSymAddr(Filedata *file_data, Elf64_Shdr *rela_hdr,
 	for (Elf64_Off i = 0; i < rel_number; i++)
 	{
 		fpread(rel_entry, sizeof(*rel_entry), 1, rel_tab_offset + (Elf64_Off)i * rel_size, file_data->file);
-		if (ELF64_R_SYM(rel_entry->r_info) == dyn_func_num)
+		if ( ELF64_R_SYM(rel_entry->r_info) == dyn_func_num)
 		{
 			Elf64_Addr rela_addr = rel_entry->r_offset;
 			free(rel_entry);
