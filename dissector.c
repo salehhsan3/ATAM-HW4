@@ -206,27 +206,24 @@ ErrorTypes static getSymFuncInformation(Filedata* file_data, FunctionData* func_
             }
         }
     }
+    bool func_found = false;
     for (Elf64_Off i = 0; i < symbols_number; i++) {
         fpread(sym_tab, sizeof(*sym_tab), 1, sym_tab_offset + (Elf64_Off)i * sizeof(*sym_tab), file_data->file);
         fpread(sym_name, sym_name_length, 1, str_tab_offset + (Elf64_Off)sym_tab->st_name, file_data->file);
-
         if (strcmp(func_name, sym_name) == 0) {
+            func_found = true;
             if ((ELF64_ST_BIND(sym_tab->st_info) == GLOBAL)) {
                 func_data->address = sym_tab->st_value;
                 func_data->undefined = sym_tab->st_shndx == 0;
                 free(sym_tab);
                 free(sym_name);
                 return SUCCESS; // function was found and it's a global one!
-            } else {
-                free(sym_tab);
-                free(sym_name);
-                return FUNC_NOT_GLOBAL;
             }
         }
     }
     free(sym_tab);
     free(sym_name);
-    return FUNC_NOT_FOUND; // didn't return SUCCESS & FUNC_NOT_GLOBAL therefore it's definitely FUNC_BOT_FOUND!
+    return func_found ? FUNC_NOT_GLOBAL : FUNC_NOT_FOUND;
 }
 
 ErrorTypes static validity_check(Filedata* file_data, FunctionData* func_data, char* func_name, char* prog_path)
