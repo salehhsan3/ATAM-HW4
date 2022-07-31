@@ -288,8 +288,5 @@ ErrorTypes static process_file(char* argv[])
 int main(int argc, char* argv[])
 {
     ErrorTypes res = process_file(argv);
-    if (res != SUCCESS) {
-        return 1;
-    }
     return 0;
 }
