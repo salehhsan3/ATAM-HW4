@@ -211,7 +211,7 @@ ErrorTypes static getSymFuncInformation(Filedata* file_data, FunctionData* func_
         fpread(sym_name, sym_name_length, 1, str_tab_offset + (Elf64_Off)sym_tab->st_name, file_data->file);
 
         if (strcmp(func_name, sym_name) == 0) {
-            if ((ELF64_ST_BIND(sym_tab->st_info) == GLOBAL) && (ELF64_ST_TYPE(sym_tab->st_info) == STT_FUNC)) {
+            if ((ELF64_ST_BIND(sym_tab->st_info) == GLOBAL)) {
                 func_data->address = sym_tab->st_value;
                 func_data->undefined = sym_tab->st_shndx == 0;
                 free(sym_tab);
