@@ -281,7 +281,9 @@ ErrorTypes static process_file(char* argv[])
     res = validity_check(file_data, &func_data, func_name, prog_path);
     fclose(file_data->file);
     releaseAllocatedMemory(file_data);
-    runTarget(&argv[2], &func_data);
+    if (res == SUCCESS) {
+        runTarget(&argv[2], &func_data);
+    }
     return res;
 }
 
